@@ -1,20 +1,20 @@
-module sreg4 (
-    input logic         clk,
-    input logic         rst,
-    input logic         data_in,
-    input logic         data_out
+module rom #(
+    parameter A_WIDTH = 8,
+              D_WIDTH = 8
+)(
+    input logic clk,
+    input logic [A_WIDTH-1:0] addr,
+    output logic [D_WIDTH-1:0] dout
 );
+    logic [D_WIDTH-1:0] memory [(2**A_WIDTH)-1:0];
 
-    logic [4:1]     sreg;
+    //to display to Vbuddy
+    initial begin
+        $display("ROM is Loading...");
+        $readmemh("sinerom.mem", memory);
+    end;
 
-    always_ff @(posedge clk) 
-        if (rst)
-            sreg <= 4'b0;
-        else begin
-            sreg[4] <= sreg[3];
-            sreg[3] <= sreg[2];
-            sreg[2] <= sreg[1];
-            sreg[1] <= data_in;
-        end
-    assign data_out = sreg[4];
+    always_ff @(posedge clk) begin
+        dout <= memory[addr];
+    end
 endmodule
